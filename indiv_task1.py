@@ -6,6 +6,7 @@
 import sys
 from random import randint
 import json
+import jsonschema
 
 
 def add_train(trains):
@@ -49,7 +50,19 @@ def load_trains(file_name):
 
     """
     with open(file_name, "r", encoding="utf-8") as fin:
-        return json.load(fin)
+        loaded_data = json.load(fin)
+
+    with open('scheme.json', 'r', encoding='utf-8') as scheme_file:
+        scheme = json.load(scheme_file)
+
+    try:
+        jsonschema.validate(loaded_data, scheme)
+        return loaded_data
+    except jsonschema.exceptions.ValidationError as e:
+        print('Ошибка валидации данных:', e)
+        return None
+
+
 
 
 def list_trains(trains):
